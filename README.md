@@ -4,14 +4,14 @@ Replication package for the paper analyzing NSE Clearing Limited's (NCL) Settlem
 
 ## What this project does
 
-This repository contains the complete data pipeline and analysis code behind the paper's central results:
+This repository contains the data and analysis code behind the paper's central results:
 
 - **Forecasts three market activity series** — Cash Market (CM) volume, Futures & Options (FO) volume, and Open Interest (OI) — from August 2026 through March 2028, using monthly daily-average data benchmarked across seven candidate time-series models per series (Naive, ARIMA, SARIMA, ETS, Holt-Winters, Theta, Prophet, and an Intervention ARIMAX for FO).
 - **Projects NCL's Settlement Guarantee Fund (SGF) requirement** through an ARDL(1,1) model relating quarterly SGF to Open Interest, estimated on two alternative OI constructions (YTDOI and Spot OI) for robustness.
 - **Derives a sufficiency-threshold transaction-charge recovery rate** — the minimum revenue-recovery rate that closes the capital gap between NCL's projected SGF obligation and its standalone reserves — reported as a range (~20–40%) across alternative OI-forecasting windows rather than a single point estimate.
 - **Stress-tests the SGF against a VIX shock** using an Asymmetric ADL model of OI's response to volatility spikes.
 
-Every model comparison, structural-break diagnosis, and sensitivity check reported in the paper is reproducible from the scripts and data in this repository.
+Every model comparison and sensitivity check reported in the paper is reproducible from the scripts and data in this repository.
 
 ## Why this project is useful
 
@@ -21,56 +21,61 @@ An earlier stage of this research was used by the Securities and Exchange Board 
 
 ## Repository structure
 
-```
-.
-├── data/
-│   ├── raw/
-│   │   ├── CM.xlsx              # Daily Cash Market volume, Jan 2020–Jul 2026
-│   │   ├── FO.xlsx              # Daily Futures & Options volume, Jan 2020–Jul 2026
-│   │   ├── OI.xlsx              # Daily/monthly Open Interest, Jan 2020–Jul 2026
-│   │   ├── vix.xlsx             # Daily India VIX, Jan 2020–Jul 2026
-│   │   └── quarterly_sgf.xlsx   # Quarterly Core SGF, OI, YTDOI, CM, FO, VIX (Dec 2019–Jun 2026)
-│   ├── processed/
-│   │   ├── cm_outlier_removed.xlsx   # CM monthly daily average, 8 dates excluded (see Data Notes)
-│   │   ├── fo_outlier_removed.xlsx   # FO monthly daily average, same 8 dates excluded
-│   │   └── oi_monthly.xlsx           # OI monthly daily average, no outlier exclusion (see Data Notes)
-│   └── regression/
-│       ├── paper_regression_data.sas7bdat   # Quarterly ARDL panel, native SAS format
-│       └── Paper_Regression_Data.xlsx       # Same panel, Excel format (sheet: ACTUAL_Jun2026_QTRLY)
-│
-├── code/
-│   ├── forecasting/
-│   │   ├── cm_forecast.py       # 7-model comparison; Holt-Winters (log-scale) selected
-│   │   ├── fo_forecast.py       # 7-model comparison incl. Intervention ARIMAX; ARIMAX selected
-│   │   └── oi_forecast.py       # 4-model comparison incl. XGBoost; ARIMA(2,1,2) selected
-│   ├── sgf_ardl/
-│   │   ├── ardl_ytdoi.sas       # Preferred ARDL specification (LYTDOI regressor) — PROC AUTOREG
-│   │   ├── ardl_spotoi.sas      # Alternative ARDL specification (LOI / Spot OI regressor) — PROC AUTOREG
-│   │   └── unit_root_tests.py   # ADF unit-root tests and Johansen cointegration diagnostics
-│   ├── stress_test/
-│   │   └── asymmetric_adl.py    # VIX-shock stress model (Section 5.4)
-│   └── sensitivity/
-│       ├── oi_structural_break.py     # PELT break detection on OI growth rate
-│       └── oi_estimation_window.py    # Sensitivity of OI forecast to estimation window
-│
-├── outputs/
-│   ├── forecast_results/        # Model comparison tables and forecast paths per market
-│   └── figures/                 # Residual diagnostics and forecast-path charts
-│
-├── paper/
-│   └── Paper_CCP_Final.docx     # Full manuscript
-│
-└── README.md
-```
+All files sit at the repository root (no subfolders). They are grouped here by role.
+
+### Data
+
+| File | Contents |
+|---|---|
+| `All_DATA_ACTUAL_FORECAST_JAN2020_MAR2028.xlsx` | Master workbook: daily CM, FO, VIX and OI series, their Monthly Daily Average (MDA) aggregates, and the list of excluded outlier dates, Jan 2020 -- Jul 2026 (sheets: `CM_VOL_DAILY`, `CM_MDA`, `Outlier_Dates`, `FO_VOL_DAILY`, `FO_MDA`, `VIX_DAILY`, `VIX_MDA`, `OI_FULL_DAILY`, `OI_MDA`, `ALL_DATA_MDA`). This is the primary raw-data source; the standalone files below are extracts of it. |
+| `CM_ORIGINAL_DATA.xlsx` | Raw daily CM volume, before outlier treatment. |
+| `FO_ORIGINAL_DATA.xlsx` | Raw daily FO volume, before outlier treatment. |
+| `OI.xlsx` | Monthly Open Interest series. |
+| `OI_MDA.xlsx` | OI Monthly Daily Average (no outlier removal applied — OI is a stock, not a flow; see Data Notes). |
+| `CM_OUTLIER_RMVD.xlsx` | CM MDA with the 8 outlier dates excluded, plus `LCM` (log transform). |
+| `FO_OUTLIER_RMVD.xlsx` | FO MDA with the same 8 outlier dates excluded, plus `LFO` (log transform). |
+| `SGF_QTRLY.xlsx` | Quarterly panel — SGF, CM, OI, VIX, FO, YTDOI, and their fiscal-year-to-date cumulative variants, Dec 2019 -- Jun 2026. |
+| `SGF_OI_LAGSGF.xlsx` | Reduced quarterly panel (`SGF`, `OI`, `LSGF`, `LAGLSGF`, `LOI`) — the direct-use subset of `SGF_QTRLY.xlsx` for the ARDL regressions. |
+| `paper_regression_data.sas7bdat` / `Paper_Regression_Data.xlsx` (sheet `ACTUAL_Jun2026_QTRLY`) | The exact quarterly ARDL panel used as direct input to `ardl_ytdoi.sas` and `ardl_spotoi.sas` (Table 8), in native SAS and Excel format respectively. N = 26 usable quarters (Mar 2020 -- Jun 2026), plus one Dec-2019 base row consumed by the lag construction. The two file formats have been verified byte-identical across every regression variable. |
+
+### Code
+
+| File | Reproduces |
+|---|---|
+| `cm_forecast.py` | CM 7-model comparison; Holt-Winters (log-scale) selected (Table 3a). |
+| `fo_forecast.py` | FO 7-model comparison including the Intervention ARIMAX; ARIMAX selected (Table 3b). |
+| `oi_forecast.py` | OI 4-model comparison including XGBoost; ARIMA(2,1,2) on raw levels selected (Table 4/5). |
+| `ardl_ytdoi.sas` | Preferred ARDL specification (LYTDOI regressor), `PROC AUTOREG` (Table 8). |
+| `ardl_spotoi.sas` | Alternative ARDL specification (Spot OI regressor), `PROC AUTOREG` (Table 8). |
+| `unit_root_tests.py` | ADF unit-root tests and Johansen cointegration diagnostics (Annexure H). |
+| `asymmetric_adl.py` | Asymmetric ADL VIX-shock stress model (Table 10, Section 5.4). |
+| `oi_path_mapping.py` | Month-by-month out-of-sample OI forecast path and Forecast Reconciliation Error (FRE) detail (Annexure D). |
+| `oi_estimation_window_sensitivity.py` | Recomputes the OI forecast, SGF projection, and implied recovery rate across three alternative estimation windows — the source of Table 9a's ~20–40% sensitivity range. |
+
+### Outputs (results, not inputs)
+
+| File | Contents |
+|---|---|
+| `cm_forecast_results.xlsx` | CM model-comparison table and forecast paths, as written by `cm_forecast.py`. |
+| `OI_Forecast_Results.xlsx` | OI model-comparison table and forecast paths, as written by `oi_forecast.py`. |
+| `Unit_Test_Results.xlsx` | ADF and Johansen test output, as written by `unit_root_tests.py` (Annexure H). |
+| `stationarity-results (65).html` | Raw SAS output log for the YTDOI ARDL regression — verified to match `ardl_ytdoi.sas` and Table 8 to the decimal. |
+| `stationarity-results (66).html` | Raw SAS output log for the Spot-OI ARDL regression — verified to match `ardl_spotoi.sas` and Table 8 to the decimal. |
+
+### Not included in this repository
+
+- **A standalone VIX raw-data file.** Daily and MDA VIX series are included as the `VIX_DAILY` and `VIX_MDA` sheets inside `All_DATA_ACTUAL_FORECAST_JAN2020_MAR2028.xlsx` rather than as a separate file.
+- **A standalone structural-break-detection script.** The paper's PELT-based break analysis (used to validate modeled shock timing in Sections 3.3--3.4) is not included here as a standalone script; the forecasting scripts above take the resulting break dates as given.
+- **The manuscript itself.** This version of the repository holds the data and code only; the paper is not currently included here.
 
 ## Data notes
 
 - **CM and FO**: Monthly daily averages exclude 8 dates — 6 Muhurat trading sessions and 2 SEBI-mandated Business Continuity Plan (BCP) test dates — because these are non-representative, procedurally distinct trading sessions rather than data errors. November 27, 2020 was investigated as a possible Muhurat misclassification and confirmed instead to be an MSCI index rebalancing day; it is retained in all series. Full outlier rationale is in the paper's Section 3.2 and Table 2.
 - **OI**: No outlier exclusion is applied. OI is a stock (point-in-time open positions), not a flow like CM/FO volume, so the same procedural-date argument for exclusion does not apply; retaining all dates is the paper's primary specification (Section 3.4).
 - **OI forecasting model**: `oi_forecast.py` fits `ARIMA(2,1,2)` directly on **raw OI levels**, not log-transformed — this is deliberate, not an inconsistency with CM/FO's log-scale treatment. See the paper's Section 3.5 for why OI's larger absolute scale makes the log-transform safeguard unnecessary here.
-- **Quarterly SGF data**: `quarterly_sgf.xlsx` includes both YTDOI (fiscal-year-to-date cumulative average OI) and Spot OI (plain monthly daily average at quarter-end) as alternative regressors for the ARDL model — see Section 3.6 and Table 8 for why both are reported.
-- **ARDL regression panel**: `data/regression/paper_regression_data.sas7bdat` and `data/regression/Paper_Regression_Data.xlsx` (sheet `ACTUAL_Jun2026_QTRLY`) contain the identical quarterly panel — SGF, CM, OI, VIX, FO, YTDOI and their log/lag transforms (LSGF, LAGLSGF, LOI, LYTDOI, LCM, LVIX) — used as direct input to both `ardl_ytdoi.sas` and `ardl_spotoi.sas` (Table 8). N = 26 usable quarters (Mar-2020 to Jun-2026), plus one Dec-2019 base row consumed by the lag construction. The two file formats have been verified byte-identical across every regression variable, so either can be used to reproduce Table 8's coefficients exactly.
-- **Why two languages**: The two Table 8 ARDL regressions (`ardl_ytdoi.sas`, `ardl_spotoi.sas`) were originally estimated in SAS (`PROC AUTOREG`), as that was the author's working environment for this stage of the analysis, and are included in their native form rather than re-implemented in Python, so the code exactly matches what produced the published coefficients. Every other script in this repository is Python. The same underlying data step also constructs the differenced/lagged variables (`DOI`, `DVIX`, `DVIXSQ`, `DVIXPOS`, `DCM`, etc.) used by the Asymmetric ADL stress model in `asymmetric_adl.py`, which is estimated independently in Python and cross-checked against the SAS-derived values.
+- **Quarterly SGF data**: `SGF_QTRLY.xlsx` includes both YTDOI (fiscal-year-to-date cumulative average OI) and Spot OI (plain monthly daily average at quarter-end) as alternative regressors for the ARDL model — see Section 3.6 and Table 8 for why both are reported.
+- **ARDL regression panel**: `paper_regression_data.sas7bdat` and `Paper_Regression_Data.xlsx` contain SGF, CM, OI, VIX, FO, YTDOI and their log/lag transforms (LSGF, LAGLSGF, LOI, LYTDOI, LCM, LVIX), used as direct input to both `ardl_ytdoi.sas` and `ardl_spotoi.sas` (Table 8). The two file formats have been verified byte-identical across every regression variable, so either can be used to reproduce Table 8's coefficients exactly.
+- **Why two languages**: The two Table 8 ARDL regressions (`ardl_ytdoi.sas`, `ardl_spotoi.sas`) were originally estimated in SAS (`PROC AUTOREG`), as that was the author's working environment for this stage of the analysis, and are included in their native form rather than re-implemented in Python, so the code exactly matches what produced the published coefficients. Every other script in this repository is Python. The same underlying quarterly panel also underlies the differenced/lagged variables used by the Asymmetric ADL stress model in `asymmetric_adl.py`, which is estimated independently in Python and cross-checked against the SAS-derived values.
 
 ## Getting started
 
@@ -101,34 +106,40 @@ Running `ardl_ytdoi.sas` and `ardl_spotoi.sas` requires SAS (SAS 9.4, or the fre
 Each forecasting script follows the same pattern: load the processed monthly data, split into a 63-month training window (Jan 2020–Mar 2025) and 16-month holdout (Apr 2025–Jul 2026), fit and compare candidate models on the holdout, then refit the best model on the full sample to forecast Aug 2026–Mar 2028.
 
 ```bash
-python code/forecasting/cm_forecast.py
-python code/forecasting/fo_forecast.py
-python code/forecasting/oi_forecast.py
+python cm_forecast.py
+python fo_forecast.py
+python oi_forecast.py
 ```
 
-Each script writes a model-comparison table and a full forecast path (point estimate + 95% interval) to `outputs/forecast_results/`.
+`cm_forecast.py` and `oi_forecast.py` write their model-comparison table and full forecast path (point estimate + 95% interval) to `cm_forecast_results.xlsx` and `OI_Forecast_Results.xlsx` respectively.
 
 ### Reproducing the SGF projection and sufficiency-threshold rate
 
 ```
 Run in SAS (SAS Studio / SAS OnDemand for Academics / SAS 9.4):
-  code/sgf_ardl/ardl_ytdoi.sas    # Table 8, preferred specification (LYTDOI)
-  code/sgf_ardl/ardl_spotoi.sas   # Table 8, alternative specification (LOI)
+  ardl_ytdoi.sas    # Table 8, preferred specification (LYTDOI)
+  ardl_spotoi.sas   # Table 8, alternative specification (LOI)
 ```
 
-Both scripts read `data/regression/paper_regression_data.sas7bdat` and reproduce Table 8's coefficients exactly (LYTDOI = 0.0899, LAGLSGF = 0.8926, R² = 0.9839, AIC = -60.887 for the preferred specification; LOI = 0.0839, LAGLSGF = 0.9080, R² = 0.9837, AIC = -60.592 for the alternative — a ΔAIC of ~0.3 in favor of the YTDOI specification, as reported in the paper).
+Both scripts read `paper_regression_data.sas7bdat` and reproduce Table 8's coefficients exactly (LYTDOI = 0.0899, LAGLSGF = 0.8926, R² = 0.9839, AIC = -60.887 for the preferred specification; LOI = 0.0839, LAGLSGF = 0.9080, R² = 0.9837, AIC = -60.592 for the alternative — a ΔAIC of ~0.3 in favor of the YTDOI specification, as reported in the paper). The raw SAS output logs for both runs are included as `stationarity-results (65).html` (YTDOI) and `stationarity-results (66).html` (Spot OI).
 
 ```bash
-python code/sgf_ardl/unit_root_tests.py
-python code/sensitivity/oi_estimation_window.py
+python unit_root_tests.py
+python oi_estimation_window_sensitivity.py
 ```
 
 The last script reproduces Table 9a's sensitivity range (~20–40%) by recomputing the OI forecast, SGF projection, and implied recovery rate across three alternative estimation windows.
 
+### Reproducing the OI out-of-sample path and FRE detail
+
+```bash
+python oi_path_mapping.py
+```
+
 ### Reproducing the stress test
 
 ```bash
-python code/stress_test/asymmetric_adl.py
+python asymmetric_adl.py
 ```
 
 ## Where to get help
@@ -145,7 +156,7 @@ Contributions, corrections, and independent replications are welcome via pull re
 
 If you use this data or code, please cite:
 
-> [Golaka C Nath]. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal/Working Paper details, once finalized].
+> Golaka C Nath. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal/Working Paper details, once finalized].
 
 ## License
 
