@@ -145,7 +145,7 @@ Contributions, corrections, and independent replications are welcome via pull re
 
 If you use this data or code, please cite:
 
-> [Author Name]. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal/Working Paper details, once finalized].
+> [Golaka C Nath]. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal/Working Paper details, once finalized].
 
 ## License
 
