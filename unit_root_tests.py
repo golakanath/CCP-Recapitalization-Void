@@ -41,7 +41,7 @@ print("Filtered to N=26 estimation sample (Mar-2020 to Jun-2026). Shape:", df.sh
 # LCM, LVIX, LYTDOI, which are already log-transformed there) -- compute
 # it here. Verified to exactly reproduce the paper's original Unit.xlsx
 # LFO column (max abs diff = 0.0).
-df['LFO'] = np.log(df['FO'])
+# df['LFO'] = np.log(df['FO'])
 
 # ---------- 2. Data Cleaning ----------
 vars_to_test = ['LOI', 'LSGF', 'LFO', 'LCM', 'LVIX', 'LYTDOI']
