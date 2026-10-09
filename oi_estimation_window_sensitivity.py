@@ -9,8 +9,24 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA
 
-INPUT_PATH = r"c:/data/Oldata_final.xlsx"
-OUTPUT_PATH = r"c:/data/OI_Sensitivity_Comparison_CORRECTED.xlsx"
+from pathlib import Path
+try:
+    HERE = Path(__file__).resolve().parent
+except NameError:                       # running inside Jupyter
+    HERE = Path.cwd()
+
+def _find(name):
+    """Locate an input file (case-insensitive) in the script folder,
+    data/raw or the current folder."""
+    for folder in (HERE, HERE / "data" / "raw", Path.cwd()):
+        if folder.is_dir():
+            for f in folder.iterdir():
+                if f.name.lower() == name.lower():
+                    return str(f)
+    raise FileNotFoundError(f"{name} not found; place it next to this script.")
+
+INPUT_PATH = _find("OI.xlsx")
+OUTPUT_PATH = str(HERE / "OI_Sensitivity_Comparison_CORRECTED.xlsx")
 
 df = pd.read_excel(INPUT_PATH, sheet_name="Sheet1")
 df['Month'] = pd.to_datetime(df['Month'])
