@@ -26,9 +26,10 @@ The repository is flat: every file sits at the top level, so each script, input 
 ```
 Data (inputs)
   CM_ORIGINAL_DATA.xlsx, FO_ORIGINAL_DATA.xlsx, OI.xlsx   # Daily CM volume, FO volume and open interest, Jan 2020-Jul 2026
+  VIX_ORIGINAL_DATA.xlsx                                  # Daily India VIX, Jan 2020-Jul 2026
   CM_OUTLIER_RMVD.xlsx, FO_OUTLIER_RMVD.xlsx, OI_MDA.xlsx # Monthly daily averages (CM/FO with 8 dates excluded; OI with none)
   SGF_QTRLY.xlsx, SGF_OI_LAGSGF.xlsx                      # Quarterly Core SGF, OI, YTDOI, CM, FO, VIX (Dec 2019-Jun 2026), corrected
-  SGF_corrected_07102026.xls / .xlsx                      # Corrected quarterly panel (see "Data correction")
+  SGF_corrected_07102026.xls                              # Corrected quarterly panel (see "Data correction")
   paper_regression_data.sas7bdat                          # Quarterly ARDL panel, native SAS format (corrected)
   Paper_Regression_Data.xlsx                              # Same panel, Excel format (corrected)
   Unit.xlsx                                               # Six log series for the unit-root and cointegration tests (N = 26)
@@ -47,7 +48,6 @@ Outputs
   Unit_Test_Results.xlsx                                  # Output of unit_root_tests.py (Annexure H)
   cm_forecast_results.xlsx, OI_Forecast_Results.xlsx,
   All_DATA_ACTUAL_FORECAST_JAN2020_MAR2028.xlsx           # Forecast paths and combined actual-plus-forecast series
-  CORRECTION_NOTE_07102026.md                             # Note on the Dec-2022 SGF correction
 
 README.md
 ```
@@ -150,4 +150,3 @@ If you use this data or code, please cite:
 ## License
 
 [Specify license here — e.g., MIT for code, CC-BY-4.0 for data and paper text]
-
