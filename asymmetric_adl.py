@@ -30,7 +30,24 @@ import numpy as np
 import statsmodels.api as sm
 
 # ---------- 1. Load Data ----------
-file_path = r"data/raw/vixreg1.xlsx"
+import os
+from pathlib import Path
+try:
+    HERE = Path(__file__).resolve().parent
+except NameError:                       # running inside Jupyter
+    HERE = Path.cwd()
+
+def _find(name):
+    """Locate an input file (case-insensitive) in the script folder,
+    data/raw, data/processed or the current folder."""
+    for folder in (HERE, HERE / "data" / "raw", HERE / "data" / "processed", Path.cwd()):
+        if folder.is_dir():
+            for f in folder.iterdir():
+                if f.name.lower() == name.lower():
+                    return str(f)
+    raise FileNotFoundError(f"{name} not found; place it next to this script.")
+
+file_path = _find("vixreg1.xlsx")
 sheet_name = "RESULTS (2)"
 
 df = pd.read_excel(file_path, sheet_name=sheet_name)

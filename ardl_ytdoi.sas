@@ -1,15 +1,17 @@
 /* =========================================================
    ARDL(1,1) Regression: LSGF on LYTDOI and LAGLSGF
    (YTDOI-preferred specification -- Table 8 of the paper)
-   Verified exact match against SAS output (PROC AUTOREG):
-     LYTDOI coefficient   = 0.0899  (p = 0.0338)
-     LAGLSGF coefficient  = 0.8926  (p < .0001)
-     R-square             = 0.9839
-     AIC                  = -60.887
-     Godfrey LM (lags 1-4): all p > 0.40 -> no residual
+   Verified against SAS output (PROC AUTOREG), N = 26,
+   Mar-2020 to Jun-2026, corrected SGF data:
+     LYTDOI coefficient   = 0.0792  (p = 0.0244)
+     LAGLSGF coefficient  = 0.9108  (p < .0001)
+     R-square             = 0.9888
+     AIC                  = -70.037
+     Godfrey LM (lags 1-4): all p > 0.39 -> no residual
        autocorrelation, consistent with no AR-error term
        being needed (method=ml has no effect here since no
        nlag= option is specified in the MODEL statement).
+   Python equivalent: ardl_python.py (same results).
    ========================================================= */
 
 data PaperReg;

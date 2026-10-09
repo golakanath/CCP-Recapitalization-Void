@@ -29,8 +29,25 @@ except ImportError:
     print("Prophet is not installed. Skipping Prophet model. (Install via: pip install prophet)")
 
 # ---------- 1. Load Data & Transform to Log ----------
-INPUT_PATH = r"data/processed/fo_outlier_removed.xlsx"
-OUTPUT_PATH = r"outputs/forecast_results/FO_Forecast_Results.xlsx"
+import os
+from pathlib import Path
+try:
+    HERE = Path(__file__).resolve().parent
+except NameError:                       # running inside Jupyter
+    HERE = Path.cwd()
+
+def _find(name):
+    """Locate an input file (case-insensitive) in the script folder,
+    data/raw, data/processed or the current folder."""
+    for folder in (HERE, HERE / "data" / "raw", HERE / "data" / "processed", Path.cwd()):
+        if folder.is_dir():
+            for f in folder.iterdir():
+                if f.name.lower() == name.lower():
+                    return str(f)
+    raise FileNotFoundError(f"{name} not found; place it next to this script.")
+
+INPUT_PATH = _find("FO_OUTLIER_RMVD.xlsx")
+OUTPUT_PATH = str(HERE / "FO_Forecast_Results.xlsx")
 
 df = pd.read_excel(INPUT_PATH, sheet_name="Sheet1")
 
@@ -337,7 +354,7 @@ print(f"\nForecast output written to: {OUTPUT_PATH}")
 # ---------- 8. Save Residuals & Generate Graphs ----------
 best_resid = residuals_dict.get(best_model, sm_full.resid).dropna()
 resid_trimmed = best_resid.iloc[24:] if len(best_resid) > 24 else best_resid
-resid_trimmed.to_frame('residual').to_excel("outputs/forecast_results/FO_Residuals_Dated.xlsx")
+resid_trimmed.to_frame('residual').to_excel(str(HERE / "FO_Residuals_Dated.xlsx"))
 
 plt.figure(figsize=(12, 5))
 plt.plot(resid_trimmed.index, resid_trimmed.values, color='purple', label=f'{best_model} Residuals (LFO Scale)')
@@ -345,7 +362,7 @@ plt.axhline(0, color='black', linestyle='--', alpha=0.7)
 plt.title(f'Residuals of Best Model ({best_model}) - Log Scale (Burn-in Trimmed)')
 plt.xlabel('Date'); plt.ylabel('Residual (Log Error)')
 plt.legend(); plt.grid(True, alpha=0.3); plt.tight_layout()
-plt.savefig("outputs/figures/FO_Residuals.png", dpi=300)
+plt.savefig(str(HERE / "FO_Residuals.png"), dpi=300)
 plt.show()
 
 plt.figure(figsize=(14, 6))
@@ -358,7 +375,7 @@ plt.axvline(x=ts.index[-1], color='gray', linestyle='--', alpha=0.8, label='Fore
 plt.title('FO Trade Volume Forecast (Aug 2026 - Mar 2028) with 95% CI')
 plt.xlabel('Date'); plt.ylabel('FO Trade Volume')
 plt.legend(loc='upper left'); plt.grid(True, alpha=0.3); plt.tight_layout()
-plt.savefig("outputs/figures/FO_Forecast_Path.png", dpi=300)
+plt.savefig(str(HERE / "FO_Forecast_Path.png"), dpi=300)
 plt.show()
 
 print("Done.")

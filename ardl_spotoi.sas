@@ -1,18 +1,17 @@
 /* =========================================================
    ARDL(1,1) Regression: LSGF on LOI (Spot-OI) and LAGLSGF
    (Spot-OI alternative specification, compared against the
-   YTDOI-preferred model in ardl_ytdoi.sas; paper reports
-   Delta-AIC ~ 0.3 favoring YTDOI)
-   Verified exact match against SAS output (PROC AUTOREG):
-     LOI coefficient      = 0.0839  (p = 0.0392)
-     LAGLSGF coefficient  = 0.9080  (p < .0001)
-     R-square             = 0.9837
-     AIC                  = -60.592
-     Godfrey LM (lags 1-4): all p > 0.39 -> no residual
+   YTDOI-preferred model in ardl_ytdoi.sas; Delta-AIC ~ 0.4
+   favouring YTDOI)
+   Verified against SAS output (PROC AUTOREG), N = 26,
+   Mar-2020 to Jun-2026, corrected SGF data:
+     LOI coefficient      = 0.0734  (p = 0.0301)
+     LAGLSGF coefficient  = 0.9250  (p < .0001)
+     R-square             = 0.9886
+     AIC                  = -69.618
+     Godfrey LM (lags 1-4): all p > 0.37 -> no residual
        autocorrelation.
-   Delta-AIC vs YTDOI model = -60.887 - (-60.592) = -0.295,
-   i.e. ~0.3 AIC points in favor of the YTDOI specification,
-   matching the paper's reported comparison.
+   Python equivalent: ardl_python.py (same results).
    ========================================================= */
 
 data PaperReg;

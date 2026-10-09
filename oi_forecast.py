@@ -37,8 +37,25 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from xgboost import XGBRegressor
 
 # ---------- 1. Load data ----------
-INPUT_PATH = r"data/raw/OI.xlsx"
-OUTPUT_PATH = r"outputs/forecast_results/OI_Forecast_Results.xlsx"
+import os
+from pathlib import Path
+try:
+    HERE = Path(__file__).resolve().parent
+except NameError:                       # running inside Jupyter
+    HERE = Path.cwd()
+
+def _find(name):
+    """Locate an input file (case-insensitive) in the script folder,
+    data/raw, data/processed or the current folder."""
+    for folder in (HERE, HERE / "data" / "raw", HERE / "data" / "processed", Path.cwd()):
+        if folder.is_dir():
+            for f in folder.iterdir():
+                if f.name.lower() == name.lower():
+                    return str(f)
+    raise FileNotFoundError(f"{name} not found; place it next to this script.")
+
+INPUT_PATH = _find("OI.xlsx")
+OUTPUT_PATH = str(HERE / "OI_Forecast_Results.xlsx")
 
 df = pd.read_excel(INPUT_PATH, sheet_name="Sheet1")
 
