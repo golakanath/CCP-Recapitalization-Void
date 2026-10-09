@@ -39,6 +39,7 @@ Code
   oi_path_mapping.py                                      # OI path mapping used for the SGF projection
   oi_estimation_window_sensitivity.py                     # Table 9a: sensitivity to the OI estimation window
   ardl_ytdoi.sas, ardl_spotoi.sas                         # Table 8 ARDL(1,1): preferred (LYTDOI) and alternative (LOI)
+  ardl_python.py                                          # Python equivalent of the two SAS programs (no SAS needed)
   unit_root_tests.py                                      # Annexure H: ADF and Johansen tests
   asymmetric_adl.py                                       # VIX-shock stress model (Section 5.4)
 
@@ -92,7 +93,7 @@ Install with:
 pip install -r requirements.txt
 ```
 
-Running `ardl_ytdoi.sas` and `ardl_spotoi.sas` requires SAS (SAS 9.4, or the free SAS OnDemand for Academics / SAS Studio). No Python equivalent is provided for these two scripts, by design — see "Why two languages" in Data Notes above. Everything else in this repository runs in Python only.
+Running `ardl_ytdoi.sas` and `ardl_spotoi.sas` requires SAS, which is commercial (proprietary) software. A licensed SAS 9.4 works, and so does the free SAS OnDemand for Academics (SAS Studio), which is what the author used; it is free for non-commercial academic use. The other scripts are Python and need no SAS. Without SAS access, the saved outputs `Regression_LSGF_LYTDOI_LAGLSGF.html` and `Regression_LSGF_LOI_LAGLSGF.html` show the full Table 8 results, and `Paper_Regression_Data.xlsx` holds the same panel. For readers without SAS, `ardl_python.py` runs the same two regressions in Python (numpy, pandas, scipy only). It reads `paper_regression_data.sas7bdat` directly, and reproduces the SAS coefficients, standard errors, R-square, AIC/SBC, Durbin-Watson and Godfrey tests exactly. The SAS programs remain the code that produced the published Table 8; the Python script is an independent replication. Everything else in this repository runs in Python only.
 
 ### Reproducing the forecasts
 
