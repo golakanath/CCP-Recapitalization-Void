@@ -27,6 +27,7 @@ The repository is flat: every file sits at the top level, so each script, input 
 Data (inputs)
   CM_ORIGINAL_DATA.xlsx, FO_ORIGINAL_DATA.xlsx, OI.xlsx   # Daily CM volume, FO volume and open interest, Jan 2020-Jul 2026
   VIX_ORIGINAL_DATA.xlsx                                  # Daily India VIX, Jan 2020-Jul 2026
+  vixreg1.xlsx                                            # Monthly panel for the Asymmetric ADL stress model (sheet "RESULTS (2)", 79 months, N = 77 after differencing/lag)
   CM_OUTLIER_RMVD.xlsx, FO_OUTLIER_RMVD.xlsx, OI_MDA.xlsx # Monthly daily averages (CM/FO with 8 dates excluded; OI with none)
   SGF_QTRLY.xlsx, SGF_OI_LAGSGF.xlsx                      # Quarterly Core SGF, OI, YTDOI, CM, FO, VIX (Dec 2019-Jun 2026), corrected
   SGF_corrected_07102026.xls                              # Corrected quarterly panel (see "Data correction")
