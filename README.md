@@ -175,4 +175,7 @@ If you use this data or code, please cite:
 
 ## License
 
-[Specify license here — e.g., MIT for code, CC-BY-4.0 for data and paper text]
+- **Code** (all `.py` and `.sas` files): [MIT License](LICENSE). You may use, copy, modify and redistribute the code freely, including commercially, provided the copyright notice is kept.
+- **Data compiled by the author and the paper text** (the Excel and SAS data files, the figures and the manuscript): [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). You may use and redistribute them freely, provided you cite the paper (see Citation).
+- **Underlying source data** (NSE, NSE Clearing Limited, SEBI and RBI public disclosures) remain subject to the terms of the original publishers. The licences above apply only to the author's own compilation, code and analysis.
+- Everything is provided "as is", without warranty. The analysis is the author's own and does not represent the views of any institution with which the author is affiliated.
