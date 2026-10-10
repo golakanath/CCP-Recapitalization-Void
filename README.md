@@ -51,6 +51,11 @@ Outputs
   cm_forecast_results.xlsx, OI_Forecast_Results.xlsx,
   All_DATA_ACTUAL_FORECAST_JAN2020_MAR2028.xlsx           # Forecast paths and combined actual-plus-forecast series
 
+figures/                                                # Chart code and figures for the paper (see "Figures" below)
+  Financials_NSE_NCL_Charges.xlsx                       # Annual NSE operating income and NCL clearing charges, FY2007-FY2026 (input to Figures 4 and 5)
+  plot_*.py                                             # One script per figure (17 scripts)
+  Figure_*.png                                          # The 19 figures used in the paper
+
 README.md
 ```
 
@@ -133,6 +138,24 @@ The last script reproduces Table 9a's sensitivity range (~20–40%) by recomputi
 ```bash
 python asymmetric_adl.py
 ```
+
+### Reproducing the figures
+
+The paper's charts are in the `figures/` folder: one `plot_*.py` script per chart, the resulting `Figure_*.png` files, and `Financials_NSE_NCL_Charges.xlsx` (annual data for Figures 4 and 5). Each script finds its input files in the repository root (or in the `figures/` folder) and writes its PNG next to itself, so a script can be run from anywhere:
+
+```
+cd figures
+python plot_sgf_composition.py
+```
+
+Re-running a script regenerates the figure in the paper; differences between machines are limited to font rendering. Notes:
+
+- Figures B1 (SARIMA residuals) and B2 (CM forecast) come from `cm_forecast.py`, which draws them itself; they are included as images only.
+- `plot_fo_residuals.py` reads `FO_Residuals_Dated.xlsx`, which `fo_forecast.py` writes. Run `fo_forecast.py` first.
+- Some charts are illustrative and use values typed into the script rather than read from a data file (the waterfall, stress and sensitivity figures); each has a comment identifying the table or disclosure its values come from.
+- The scripts read `SGF_corrected_07102026.xlsx` or `SGF_corrected_07102026.xls`, whichever is present. The `.xls` format needs `xlrd` (in `requirements.txt`).
+- `Financials_NSE_NCL_Charges.xlsx` (FY2007-FY2026) is compiled by the author from NSE's annual reports (standalone financial statements). Columns: NSE revenue from operations, clearing and settlement charges paid by NSE (to NCL), and their ratio (the "Share" used in Figure 4). The FY2025 and FY2026 rows are from NSE's Integrated Annual Report 2025-26, Standalone Statement of Profit and Loss (revenue from operations ₹14,914.44 crore and ₹15,433.00 crore; clearing and settlement charges ₹796.86 crore and ₹1,357.54 crore). The consolidated revenue figure is not used.
+- The chart code was written with the assistance of Claude (Anthropic); the author supplied and verified all underlying data and checked every figure. See the paper's AI Use Disclosure.
 
 ## Where to get help
 
