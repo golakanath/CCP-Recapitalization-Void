@@ -1,5 +1,7 @@
 # The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23285555.svg)](https://doi.org/10.5281/zenodo.23285555)
+
 Replication package for the paper analyzing NSE Clearing Limited's (NCL) Settlement Guarantee Fund (SGF) adequacy, forecasting NCL's capital requirements through March 2028, and deriving a sufficiency-threshold transaction-charge recovery rate to close the projected funding gap.
 
 ## What this project does
@@ -169,9 +171,11 @@ Contributions, corrections, and independent replications are welcome via pull re
 
 ## Citation
 
-If you use this data or code, please cite:
+If you use this data or code, please cite the archived version of this replication package:
 
-> [Golaka C Nath]. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal/Working Paper details, once finalized].
+> Nath, Golaka C. (2026). *Replication package for "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market"* (v1.0.0) [Data and code]. Zenodo. https://doi.org/10.5281/zenodo.23285555
+
+and the paper, once published: Nath, G. C. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal details to be added on publication.]
 
 ## License
 
