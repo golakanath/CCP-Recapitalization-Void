@@ -1,8 +1,8 @@
 # The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23480010.svg)](https://doi.org/10.5281/zenodo.23480010)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23480331.svg)](https://doi.org/10.5281/zenodo.23480331)
 
-**Current release: v1.0.4** (archived on Zenodo, DOI [10.5281/zenodo.23480010](https://doi.org/10.5281/zenodo.23480010); see "Version history" below).
+**Current release: v1.0.5** (archived on Zenodo, DOI [10.5281/zenodo.23480331](https://doi.org/10.5281/zenodo.23480331); see "Version history" below).
 
 Replication package for the paper analyzing NSE Clearing Limited's (NCL) Settlement Guarantee Fund (SGF) adequacy, forecasting NCL's capital requirements through March 2028, and deriving a sufficiency-threshold transaction-charge recovery rate to close the projected funding gap.
 
@@ -195,10 +195,11 @@ Re-running a script regenerates the figure in the paper; differences between mac
 | Version | Zenodo DOI | Change |
 |---|---|---|
 | v1.0.0 | 10.5281/zenodo.23285555 | First archived release |
-| v1.0.1 | see the Zenodo versions list | Documentation and file updates |
+| v1.0.1 | 10.5281/zenodo.23429548 | Documentation and file updates |
 | v1.0.2 | 10.5281/zenodo.23447130 | Dec-2022 SGF correction (5,197.37 to 4,432.51) propagated to the data files |
 | v1.0.3 | 10.5281/zenodo.23447404 | `SGF_OI_LAGSGF.xlsx`: Dec-2022 LSGF and LAGLSGF replaced by `LN()` formulas |
 | v1.0.4 | 10.5281/zenodo.23480010 | Added the small-sample bounds-test scripts (`bounds_test_spot_oi.py`, `bounds_test_ytdoi.py`) and `SGF_OI_LAGSGF1.xlsx` |
+| v1.0.5 | 10.5281/zenodo.23480331 | README updated (bounds test, March 2026 SGF note, version history); data and code unchanged from v1.0.4 |
 
 ## Where to get help
 
@@ -214,9 +215,9 @@ Contributions, corrections, and independent replications are welcome via pull re
 
 If you use this data or code, please cite the archived version of this replication package:
 
-> Nath, Golaka C. (2026). *Replication package for "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market"* (v1.0.4) [Data and code]. Zenodo. https://doi.org/10.5281/zenodo.23480010
+> Nath, Golaka C. (2026). *Replication package for "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market"* (v1.0.5) [Data and code]. Zenodo. https://doi.org/10.5281/zenodo.23480331
 
-The DOI above is the version DOI for v1.0.4. All versions are also reachable through the Zenodo record https://zenodo.org/records/23480010.
+The DOI above is the version DOI for v1.0.5. The paper's data-availability statement cites v1.0.4 (10.5281/zenodo.23480010), whose data and code are identical. All versions are reachable through the Zenodo record https://zenodo.org/records/23480331.
 
 and the paper, once published: Nath, G. C. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal details to be added on publication.]
 
