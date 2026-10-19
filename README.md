@@ -1,6 +1,8 @@
 # The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23285555.svg)](https://doi.org/10.5281/zenodo.23285555)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23480010.svg)](https://doi.org/10.5281/zenodo.23480010)
+
+**Current release: v1.0.4** (archived on Zenodo, DOI [10.5281/zenodo.23480010](https://doi.org/10.5281/zenodo.23480010); see "Version history" below).
 
 Replication package for the paper analyzing NSE Clearing Limited's (NCL) Settlement Guarantee Fund (SGF) adequacy, forecasting NCL's capital requirements through March 2028, and deriving a sufficiency-threshold transaction-charge recovery rate to close the projected funding gap.
 
@@ -19,7 +21,7 @@ Every model comparison, structural-break diagnosis, and sensitivity check report
 
 NCL is India's dominant clearing corporation and a wholly-owned subsidiary of NSE, which was listed on BSE in September 2026 — a transition that has historically implied reduced parental willingness to backstop NCL's capital needs on a discretionary basis. This repository provides a transparent, fully reproducible template for assessing whether a CCP's fee structure is actuarially sufficient to fund its own risk-bearing capacity, independent of parental support. The framework is built to be adapted to other exchange-owned CCPs facing similar standalone-capitalization questions, in India or elsewhere.
 
-An earlier stage of this research was used by the Securities and Exchange Board of India (SEBI) as the basis for constituting an Expert Working Group on "Review of Economic Structure of Clearing Corporations" (see the paper's Introduction and Conflict of Interest Statement for the full disclosure of this relationship).
+An earlier draft of this research was part of the background material circulated by the Securities and Exchange Board of India (SEBI) to the members of its Expert Working Group on "Review of Economic Structure of Clearing Corporations" before the group's first meeting in July 2025, to which the author was invited. The results in this repository and the paper were derived independently from public data. See the paper's Conflict of Interest and Disclosure Statement for the full disclosure. No confidential or non-public documents are included in this repository.
 
 ## Repository structure
 
@@ -31,7 +33,9 @@ Data (inputs)
   VIX_ORIGINAL_DATA.xlsx                                  # Daily India VIX, Jan 2020-Jul 2026
   vixreg1.xlsx                                            # Monthly panel for the Asymmetric ADL stress model (sheet "RESULTS (2)", 79 months, N = 77 after differencing/lag)
   CM_OUTLIER_RMVD.xlsx, FO_OUTLIER_RMVD.xlsx, OI_MDA.xlsx # Monthly daily averages (CM/FO with 8 dates excluded; OI with none)
-  SGF_QTRLY.xlsx, SGF_OI_LAGSGF.xlsx                      # Quarterly Core SGF, OI, YTDOI, CM, FO, VIX (Dec 2019-Jun 2026), corrected
+  SGF_QTRLY.xlsx                                          # Quarterly Core SGF, OI, YTDOI, CM, FO, VIX (Dec 2019-Jun 2026), corrected
+  SGF_OI_LAGSGF.xlsx                                      # Spot-OI bounds-test input: MONTHYR, SGF1, OI, LSGF, LAGLSGF, LOI (log columns are LN formulas)
+  SGF_OI_LAGSGF1.xlsx                                     # YTDOI bounds-test input: as above plus YTDOI, LYTDOI (log columns are LN formulas)
   SGF_corrected_07102026.xls                              # Corrected quarterly panel (see "Data correction")
   paper_regression_data.sas7bdat                          # Quarterly ARDL panel, native SAS format (corrected)
   Paper_Regression_Data.xlsx                              # Same panel, Excel format (corrected)
@@ -45,11 +49,13 @@ Code
   ardl_python.py                                          # Python equivalent of the two SAS programs (no SAS needed)
   unit_root_tests.py                                      # Annexure H: ADF and Johansen tests
   asymmetric_adl.py                                       # VIX-shock stress model (Section 5.4)
+  bounds_test_spot_oi.py, bounds_test_ytdoi.py            # Annexure H: Pesaran-Shin-Smith bounds test, small-sample critical values (Spot OI / YTDOI)
 
 Outputs
   Regression_LSGF_LYTDOI_LAGLSGF.html                     # SAS output, preferred specification
   Regression_LSGF_LOI_LAGLSGF.html                        # SAS output, alternative specification
   Unit_Test_Results.xlsx                                  # Output of unit_root_tests.py (Annexure H)
+  output/bounds_oi_*.csv, output/bounds_ytdoi_*.csv       # Written by the bounds-test scripts (regression and critical values)
   cm_forecast_results.xlsx, OI_Forecast_Results.xlsx,
   All_DATA_ACTUAL_FORECAST_JAN2020_MAR2028.xlsx           # Forecast paths and combined actual-plus-forecast series
 
@@ -71,13 +77,17 @@ README.md
 - **Reproducibility across software versions**: Forecast paths and full-sample results reproduce exactly (for example, the FO ARIMAX March-2028 forecast of 69,955,687 and the CM Holt-Winters forecast of 189,222). Holdout error metrics for models fitted by numerical optimisation (notably the FO ARIMAX, paper MAPE 9.34%) can differ in the third or fourth significant digit across `statsmodels` versions (a re-run produced 9.33%), and Prophet's 95% interval bounds vary slightly between runs because they are simulated. Neither affects the paper's conclusions: ARIMAX and Theta remain effectively tied for FO, and Holt-Winters remains the reported CM model.
 - **Why two languages**: The two Table 8 ARDL regressions (`ardl_ytdoi.sas`, `ardl_spotoi.sas`) were originally estimated in SAS (`PROC AUTOREG`), as that was the author's working environment for this stage of the analysis, and are included in their native form rather than re-implemented in Python, so the code exactly matches what produced the published coefficients. Every other script in this repository is Python. The same data step also constructs differenced and lagged variables (`DOI`, `DVIX`, `DVIXSQ`, `DVIXPOS`, `DCM`, `DYTDOI`, etc.). A quarterly regression of `DYTDOI` on these variables is a supplementary check only; the paper's Asymmetric ADL stress model (Section 5.4, Annexure I) is a separate monthly model (N = 77) estimated in Python in `asymmetric_adl.py`.
 
+- **Bounds-test inputs**: `SGF_OI_LAGSGF.xlsx` (Spot OI) and `SGF_OI_LAGSGF1.xlsx` (YTDOI) hold the monthly-dated quarterly series used by the two bounds-test scripts. The log columns are Excel `LN()` formulas, and the scripts in any case rebuild the logs from the raw columns (SGF1, OI or YTDOI), so the results do not depend on cached values.
+- **March 2026 SGF**: the panel uses ₹13,027.77 crore for the March 2026 quarter. NCL's audited statements show ₹13,026.77 crore. The ₹1 crore difference is immaterial on the log scale and does not change any reported result at the precision shown. It is disclosed in a note under Table F2 of the paper. The panel has not been changed so that the archived data match the figures in the paper exactly.
+
 ## Data correction (7 October 2026)
 
 Core SGF for the December 2022 quarter had been entered as 5,197.37 (the June 2023 figure). The correct value, from NCL's published financial statements, is **4,432.51**. Quarterly Core SGF is therefore strictly increasing in all 26 quarter-on-quarter changes, with no decline in any quarter.
 
-- Corrected panel: `SGF_corrected_07102026.xls` (the same correction has been applied to `SGF_QTRLY.xlsx`, `SGF_OI_LAGSGF.xlsx`, `Paper_Regression_Data.xlsx` and `paper_regression_data.sas7bdat`).
+- Corrected panel: `SGF_corrected_07102026.xls` (the same correction has been applied to `SGF_QTRLY.xlsx`, `SGF_OI_LAGSGF.xlsx`, `SGF_OI_LAGSGF1.xlsx`, `Paper_Regression_Data.xlsx` and `paper_regression_data.sas7bdat`).
 - Only the Dec-2022 SGF cell, and the cells computed from it (LSGF, LAGLSGF in the Mar-2023 row, k and the rolling k averages), differ from the earlier version. No OI, CM, FO or VIX value changed.
 - Re-estimated outputs: Table 8, Annexure F (Tables F1 and F2, Figures F1 and F2), Annexure H (ADF and Johansen tests, re-run on `Unit.xlsx`; `Unit_Test_Results.xlsx`), and the actual-SGF series in Figures 3, 4, 5 and 11 of the paper.
+- Follow-up (v1.0.3): in `SGF_OI_LAGSGF.xlsx` the Dec-2022 LSGF and the Mar-2023 LAGLSGF had been typed as values from the old figure. They are now `LN()` formulas giving the correct 8.396721 (= ln 4,432.51).
 - Unaffected: Table 6 (k and the March 2028 projection use only March and June 2026), the capital-gap figures, the sufficiency-threshold rate, and every OI, CM and FO forecasting model.
 
 ## Getting started
@@ -133,7 +143,28 @@ python oi_estimation_window_sensitivity.py
 
 `unit_root_tests.py` reads `Unit.xlsx` (it looks in its own folder, `data/raw/` and the working folder, so it runs from anywhere; a path can also be passed as an argument) and writes `Unit_Test_Results.xlsx` next to it. It reproduces Annexure H: on the corrected panel LSGF has ADF statistic 0.271 (p = 0.976) in levels and -3.889 (p = 0.002) in first differences, i.e. I(1); LYTDOI is I(1); LOI, LFO and LVIX are I(0); and the Johansen trace statistics (constant term, 2 lags in levels) are 17.331 / 1.881 for LOI & LSGF and 21.235 / 4.509 for LSGF & LYTDOI.
 
-The last script reproduces Table 9a's sensitivity range (~20–40%) by recomputing the OI forecast, SGF projection, and implied recovery rate across three alternative estimation windows.
+`oi_estimation_window_sensitivity.py` reproduces Table 9a's sensitivity range (~20–40%) by recomputing the OI forecast, SGF projection, and implied recovery rate across three alternative estimation windows.
+
+### Reproducing the bounds test (Annexure H)
+
+```bash
+python bounds_test_spot_oi.py      # reads SGF_OI_LAGSGF.xlsx
+python bounds_test_ytdoi.py        # reads SGF_OI_LAGSGF1.xlsx
+# optional: pass another workbook path as the first argument
+```
+
+Only `numpy`, `pandas` and `openpyxl` are needed. Each script rebuilds the logs from the raw columns and estimates the unrestricted error-correction form of the ARDL(1,1) (Pesaran, Shin and Smith 2001, Case III: unrestricted intercept, no trend, k = 1):
+
+ΔLSGF_t = a + π1·LSGF_(t-1) + π2·LX_(t-1) + g·ΔLX_t + e_t
+
+where X is Spot OI or YTDOI. The bounds F-statistic tests π1 = π2 = 0. Because the sample is small (25 usable quarterly observations), the scripts simulate the I(0) and I(1) critical bounds for that sample size (20,000 replications, fixed seed 20261019) rather than using asymptotic tables. Results are written to `./output/` as CSV files.
+
+| Regressor | F-statistic | Observations | 10% bounds I(0)/I(1) | 5% bounds | 1% bounds |
+|---|---|---|---|---|---|
+| Spot OI | 2.854 | 25 | 4.322 / 5.191 | 5.453 / 6.479 | 8.108 / 9.855 |
+| YTDOI | 3.228 | 25 | 4.322 / 5.191 | 5.453 / 6.479 | 8.108 / 9.855 |
+
+Neither F-statistic exceeds the 10% lower bound, so the test does not reject the null of no level relationship. With 25 observations the test has low power, so this does not establish the absence of a long-run relationship. The paper therefore treats the single-cointegrating-relation conclusion from the Johansen test as tentative, and reports the ARDL(1,1) as a short-run dynamic projection model. See Annexure H. Narayan (2005) tabulates critical values only for n ≥ 30, so simulated values are used here.
 
 ### Reproducing the stress test
 
@@ -159,13 +190,23 @@ Re-running a script regenerates the figure in the paper; differences between mac
 - `Financials_NSE_NCL_Charges.xlsx` (FY2007-FY2026) is compiled by the author from NSE's annual reports (standalone financial statements). Columns: NSE revenue from operations, clearing and settlement charges paid by NSE (to NCL), and their ratio (the "Share" used in Figure 4). The FY2025 and FY2026 rows are from NSE's Integrated Annual Report 2025-26, Standalone Statement of Profit and Loss (revenue from operations ₹14,914.44 crore and ₹15,433.00 crore; clearing and settlement charges ₹796.86 crore and ₹1,357.54 crore). The consolidated revenue figure is not used.
 - The chart code was written with the assistance of Claude (Anthropic); the author supplied and verified all underlying data and checked every figure. See the paper's AI Use Disclosure.
 
+## Version history
+
+| Version | Zenodo DOI | Change |
+|---|---|---|
+| v1.0.0 | 10.5281/zenodo.23285555 | First archived release |
+| v1.0.1 | see the Zenodo versions list | Documentation and file updates |
+| v1.0.2 | 10.5281/zenodo.23447130 | Dec-2022 SGF correction (5,197.37 to 4,432.51) propagated to the data files |
+| v1.0.3 | 10.5281/zenodo.23447404 | `SGF_OI_LAGSGF.xlsx`: Dec-2022 LSGF and LAGLSGF replaced by `LN()` formulas |
+| v1.0.4 | 10.5281/zenodo.23480010 | Added the small-sample bounds-test scripts (`bounds_test_spot_oi.py`, `bounds_test_ytdoi.py`) and `SGF_OI_LAGSGF1.xlsx` |
+
 ## Where to get help
 
 For questions about the methodology, data construction, or reproducing a specific result, please [open an issue](../../issues) in this repository. When reporting a discrepancy, please include the script name, the exact command run, and your `statsmodels` version (for Python scripts) or SAS version (for the two ARDL scripts) — several models in this repository (particularly the OI ARIMA(2,1,2) specification) are sensitive to solver and version differences; see the reproducibility notes in the paper's Section 3.5 and Annexure D before assuming a discrepancy is a data or code error.
 
 ## Who maintains this project
 
-This repository is maintained by the paper's author. The author discloses institutional affiliations relevant to this research — including a Governing Board role at NSE Clearing Limited and a Standing Committee membership at the Reserve Bank of India — in the paper's Conflict of Interest and Disclosure Statement. All data in this repository is drawn from public disclosures (NSE/NCL Bhavcopy data, NCL's quarterly and annual financial statements, and SEBI/RBI circulars, each cited in the paper); no non-public information from either affiliation informed any part of this analysis.
+This repository is maintained by the paper's author. The author discloses institutional affiliations relevant to this research — including a Governing Board role at NSE Clearing Limited, a Standing Committee membership at the Reserve Bank of India, and past membership of the Benchmark Oversight Committee of Financial Benchmarks India Limited (FBIL) until 2021 — in the paper's Conflict of Interest and Disclosure Statement. All data in this repository is drawn from public disclosures (NSE/NCL Bhavcopy data, NCL's quarterly and annual financial statements, and SEBI/RBI circulars, each cited in the paper); no non-public information from either affiliation informed any part of this analysis.
 
 Contributions, corrections, and independent replications are welcome via pull request or issue.
 
@@ -173,7 +214,9 @@ Contributions, corrections, and independent replications are welcome via pull re
 
 If you use this data or code, please cite the archived version of this replication package:
 
-> Nath, Golaka C. (2026). *Replication package for "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market"* (v1.0.0) [Data and code]. Zenodo. https://doi.org/10.5281/zenodo.23285555
+> Nath, Golaka C. (2026). *Replication package for "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market"* (v1.0.4) [Data and code]. Zenodo. https://doi.org/10.5281/zenodo.23480010
+
+The DOI above is the version DOI for v1.0.4. All versions are also reachable through the Zenodo record https://zenodo.org/records/23480010.
 
 and the paper, once published: Nath, G. C. "The CCP Recapitalization Void: Pre-Funding Systemic Risk in India's Equity & Equity Derivatives Market." [Journal details to be added on publication.]
 
